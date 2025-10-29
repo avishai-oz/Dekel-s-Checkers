@@ -12,7 +12,7 @@ namespace Checkers.Application
         private readonly IRules _rules;
         
         public event Action<BoardState, PlayerColor> PositionChanged;
-        public event Action<PlayerColor, Move> MoveCommitted;
+        //public event Action<PlayerColor, Move> MoveCommitted;
         public event Action<PlayerColor?> GameOver;
         
         //for presentor
