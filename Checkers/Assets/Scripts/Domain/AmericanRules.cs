@@ -28,13 +28,37 @@ namespace Checkers.Domain
        }
         public bool IsGameOver(BoardState board, PlayerColor side, out PlayerColor? winner)
          {
-              if (board == null)
-                throw new ArgumentNullException(nameof(board));
-              
               winner = null;
+              
+              bool hasPieces = false;
+              for(int r=0; r<BoardState.Size && !hasPieces; r++)
+              for (int c = 0; c < BoardState.Size && !hasPieces; c++)
+              {
+                    var p = board[r, c];
+                    if (p != null && p.Owner == side)
+                        hasPieces = true;
+              }
+              if (!hasPieces)
+              {
+                  winner = side.Opponent();
+                  return true;
+              }
+             
+              var moves = LegalMoves(board, side);
+              if (moves.Count == 0)
+              {
+                  winner = side.Opponent();
+                  return true;
+              }
               return false;
          }
-         
+        
+        public bool ShouldCrown(Piece piece, Coord to)
+        {
+            if (piece.Kind == PieceKind.Queen) return false;
+            return (piece.Owner == PlayerColor.White && to.Row == 0) ||
+                   (piece.Owner == PlayerColor.Black && to.Row == BoardState.Size - 1);
+        }
          
          // ---------- Helpers ----------
          
@@ -138,12 +162,5 @@ namespace Checkers.Domain
          }
 
 
-         // האם היעד גורם להכתרה (Single → Queen)
-         internal static bool ShouldCrown(Piece piece, Coord to)
-         {
-             if (piece.Kind == PieceKind.Queen) return false;
-             return (piece.Owner == PlayerColor.White && to.Row == 0) ||
-                    (piece.Owner == PlayerColor.Black && to.Row == BoardState.Size - 1);
-         }
     }
 }

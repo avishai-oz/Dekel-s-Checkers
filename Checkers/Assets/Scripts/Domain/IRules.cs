@@ -8,5 +8,7 @@ namespace Checkers.Domain
         
         bool IsGameOver(BoardState board, PlayerColor side,out PlayerColor? winner);
         
+        bool ShouldCrown(Piece piece, Coord to);
+        
     }
 }
