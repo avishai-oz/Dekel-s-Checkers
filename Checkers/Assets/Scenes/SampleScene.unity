@@ -269,7 +269,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79e5a32f49e45a9a085710ab78a9eaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Moves.CameraMovement
-  transitionDuration: 1
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,7 +445,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &2060332517
+--- !u!1001 &1105361241
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -456,7 +455,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 707152744373102026, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.98628
+      value: -3.99661
       objectReference: {fileID: 0}
     - target: {fileID: 707152744373102026, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
       propertyPath: m_LocalPosition.y
@@ -464,7 +463,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 707152744373102026, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -7.0385
+      value: -3.41123
       objectReference: {fileID: 0}
     - target: {fileID: 707152744373102026, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
       propertyPath: m_LocalRotation.w
@@ -498,10 +497,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chess_board
       objectReference: {fileID: 0}
-    - target: {fileID: 4706474479210379421, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -514,4 +509,4 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
-  - {fileID: 2060332517}
+  - {fileID: 1105361241}
