@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Checkers.Application;
 using Checkers.Domain;
@@ -18,13 +19,13 @@ namespace Checkers.Presenter
         Coord _from;
         Dictionary<Coord, List<Move>> _byFrom = new();
         
-        public GamePresenter(IInGameHUD hud, IBoardView board, MatchService match)
+        public GamePresenter(MatchService match, IBoardView board, IInGameHUD hud)
         {
             Debug.Log("GamePresenter: constructed & wiring events");
 
-            _match = match;
-            _board = board;
-            _hud = hud;
+            _match = match ?? throw new ArgumentNullException(nameof(match));
+            _board = board ?? throw new ArgumentNullException(nameof(board));
+            _hud   = hud; // מותר להיות null זמנית
             
             _match.PositionChanged += HandelPositionChanged;
             _match.GameOver += HandelGameOver;
@@ -47,6 +48,13 @@ namespace Checkers.Presenter
 
         }
 
+        public void OnStartRequested()
+        {
+            Debug.Log("Presenter.OnStartRequested → draw initial board");
+            _board.ShowPosition(_match.Snapshot());   // מציירים את המצב ההתחלתי
+            _hud?.ShowTurn(_match.SideToMove);         // מציגים תור נוכחי (אם יש HUD)
+            RebuildLegalCache();                      // בונה cache של מהלכים למצב הנוכחי
+        }
 
         public void OnMoveTweenComplete()
         {
@@ -55,6 +63,8 @@ namespace Checkers.Presenter
 
         public void OnStartMatch()
         {
+            Debug.Log("Presenter.OnStart... → calling ShowPosition");
+
             _board.ShowPosition(_match.Snapshot());
             _hud.ShowTurn(_match.SideToMove);
         }

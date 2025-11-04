@@ -9,9 +9,11 @@ namespace Checkers.View
 {
     public class BoardView : MonoBehaviour, IBoardView
     {
+        [Header("board")]
         [SerializeField] private Transform boardRoot;
         private readonly Dictionary<Coord, Transform> _tiles = new();
         
+        [Header("highlighting")]
         [SerializeField] private Material highlightMat;
         private readonly Dictionary<Coord, Renderer> _highlightRends = new();
         private readonly HashSet<Coord> _highlighted = new();
@@ -22,7 +24,7 @@ namespace Checkers.View
         [SerializeField] private GameObject blackSinglePrefab;
         [SerializeField] private GameObject whiteQueenPrefab;
         [SerializeField] private GameObject blackQueenPrefab;
-        [SerializeField] private float pieceYOffset = 0.1f; // כמה להרים את החייל מעל האריח
+        [SerializeField] private float pieceYOffset = 0.3f; // כמה להרים את החייל מעל האריח
         private readonly Dictionary<Coord, GameObject> _pieces = new();
         public event Action<Coord> TileClicked;
         
@@ -85,12 +87,16 @@ namespace Checkers.View
         public void HighlightTargets(IEnumerable<Coord> coords)
         {
             ClearHighlights();
+            int n = 0;
             foreach (var c in coords)
                 if (_highlightRends.TryGetValue(c, out var r))
                 {
                     r.enabled = true;
                     _highlighted.Add(c);
+                    n++;
                 }
+            Debug.Log($"BoardView.HighlightTargets: turned on {n}");
+
         }
 
         public void ClearHighlights()
@@ -102,6 +108,7 @@ namespace Checkers.View
         }
         public void ShowPosition(BoardState board)
         {
+            Debug.Log("BoardView.ShowPosition CALLED");
             // 1) נקה ציורים קודמים
             _pieces.Clear();
             if (piecesRoot != null)
@@ -111,6 +118,7 @@ namespace Checkers.View
                     var child = piecesRoot.GetChild(i);
                 }
             }
+            int placed = 0;
 
             // 2) עבור על כל התאים וצייר
             for (int r = 0; r < BoardState.Size; r++)
@@ -132,7 +140,11 @@ namespace Checkers.View
                 go.transform.position = new Vector3(pos.x, pos.y + pieceYOffset, pos.z);
 
                 _pieces[coord] = go;
+                
+                placed++;
             }
+            Debug.Log($"BoardView.ShowPosition DONE, placed={placed}");
+
         }
 
         private GameObject GetPiecePrefab(Piece p)

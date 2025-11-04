@@ -7,9 +7,9 @@ using Checkers.View;
 public class GameComposerMB : MonoBehaviour
 {
     [SerializeField] private BoardView boardView;   // גרור את ה-BoardView MB
-    [SerializeField] private IInGameHUD hudView;     // אם עוד אין — צור דמה שמיישם IInGameHUD
+    [SerializeField] private InGameHUD hudView;     
 
-    private MatchService _match;
+    private MatchService match;
     private GamePresenter _presenter;
 
     void Awake()
@@ -19,10 +19,13 @@ public class GameComposerMB : MonoBehaviour
         var rules   = new AmericanRules();
 
         // 2) Application
-        _match = new MatchService(rules, initial, PlayerColor.White);
+        match = new MatchService(rules, initial, PlayerColor.White);
 
         // 3) Presenter
-        _presenter = new GamePresenter(hudView, boardView, _match);
+        _presenter = new GamePresenter(match, boardView, hudView);
+        Debug.Log("Composer: calling OnStartRequested");
+        _presenter.OnStartRequested();
+        Debug.Log("Composer: returned from OnStartRequested");
 
         // 4) ציור פתיחה
         _presenter.OnStartMatch();
