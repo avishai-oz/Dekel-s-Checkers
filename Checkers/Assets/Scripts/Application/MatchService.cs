@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using Checkers.Domain;
+using Checkers.Presenter;
 
 namespace Checkers.Application
 {
@@ -19,6 +20,7 @@ namespace Checkers.Application
         public IReadOnlyList<Move> LegalMoves() => _rules.LegalMoves(_board, _turn);
         public BoardState Snapshot() => _board.Clone();
         public PlayerColor SideToMove => _turn;
+        
         
         private void OnPositionChanged()
             => PositionChanged?.Invoke(_board.Clone(), _turn);

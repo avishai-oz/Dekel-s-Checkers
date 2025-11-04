@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -16,7 +17,8 @@ public class BoardTilesBuilder : MonoBehaviour
     [SerializeField] private Vector2 tileSize = new Vector2(1, 1); // מרחק בין משבצות (ב-XZ)
     [SerializeField] private Vector3 origin = Vector3.zero;        // נקודת התחלה (0,0)
     [SerializeField] private float y = 0f;            // גובה ה־Tiles (ב־Y)
-
+    
+    
     [ContextMenu("Rebuild Tiles")]
     public void RebuildTiles()
     {

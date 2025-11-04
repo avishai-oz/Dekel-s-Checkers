@@ -12,6 +12,25 @@ namespace Checkers.Domain
         public Piece this[int r, int c] => _grid[r, c];
         public Piece this[Coord c]      => _grid[c.Row, c.Col];
 
+        public static BoardState CreateInitial()
+        {
+            var board = new BoardState();
+
+            // שחורים למעלה: רמות 0..2 על המשבצות הכהות
+            for (int r = 0; r <= 2; r++)
+            for (int c = 0; c < Size; c++)
+                if (((r + c) & 1) == 1)
+                    board.Place(new Coord(r, c), new Piece(PlayerColor.Black, PieceKind.Single));
+
+            // לבנים למטה: רמות 5..7 על המשבצות הכהות
+            for (int r = 5; r <= 7; r++)
+            for (int c = 0; c < Size; c++)
+                if (((r + c) & 1) == 1)
+                    board.Place(new Coord(r, c), new Piece(PlayerColor.White, PieceKind.Single));
+
+            return board;
+        }
+        
         public bool InBounds(Coord c) =>
             c.Row >= 0 && c.Row < Size && c.Col >= 0 && c.Col < Size;
 
