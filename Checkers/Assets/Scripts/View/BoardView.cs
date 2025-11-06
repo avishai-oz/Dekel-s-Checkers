@@ -19,13 +19,16 @@ namespace Checkers.View
         private readonly HashSet<Coord> _highlighted = new();
         
         [Header("pices")]
-        [SerializeField] private Transform piecesRoot; // הורה לכל החיילים בסצנה
+        [SerializeField] private Transform piecesRoot;
         [SerializeField] private GameObject whiteSinglePrefab;
         [SerializeField] private GameObject blackSinglePrefab;
         [SerializeField] private GameObject whiteQueenPrefab;
         [SerializeField] private GameObject blackQueenPrefab;
-        [SerializeField] private float pieceYOffset = 0.3f; // כמה להרים את החייל מעל האריח
+        [SerializeField] private float pieceYOffset = 0.3f; 
+       
         private readonly Dictionary<Coord, GameObject> _pieces = new();
+        private readonly Dictionary<Coord, Transform> _slots = new();
+        private BoardState _lastBoard;
         public event Action<Coord> TileClicked;
         
         void Awake()
@@ -46,6 +49,14 @@ namespace Checkers.View
                 var coord = new Coord(r, c);
                 _tiles[coord] = child;
                 
+                var slot = child.Find("PieceSlot");
+                if (slot == null) {
+                    var go = new GameObject("PieceSlot");
+                    go.transform.SetParent(child, false);
+                    slot = go.transform;
+                }
+                _slots[coord] = slot;
+
                 var click = child.GetComponent<TileClick>();
                 if (click == null) click = child.gameObject.AddComponent<TileClick>();
                 click.Coord = coord;
@@ -73,7 +84,6 @@ namespace Checkers.View
             Debug.Log($"BoardView → TileClicked({c})");
             TileClicked?.Invoke(c);
         }
-
         private static bool TryGetCoordFromName(string name, out int r, out int c)
         {
             r = c = 0;
@@ -83,7 +93,6 @@ namespace Checkers.View
             return int.TryParse(name.Substring(1, comma-1).Trim(), out r)
                    && int.TryParse(name.Substring(comma+1, name.Length-comma-2).Trim(), out c);
         }
-
         public void HighlightTargets(IEnumerable<Coord> coords)
         {
             ClearHighlights();
@@ -98,7 +107,6 @@ namespace Checkers.View
             Debug.Log($"BoardView.HighlightTargets: turned on {n}");
 
         }
-
         public void ClearHighlights()
         {
             foreach (var c in _highlighted)
@@ -106,47 +114,89 @@ namespace Checkers.View
                     r.enabled = false;
             _highlighted.Clear();
         }
+
         public void ShowPosition(BoardState board)
         {
-            Debug.Log("BoardView.ShowPosition CALLED");
-            // 1) נקה ציורים קודמים
-            _pieces.Clear();
-            if (piecesRoot != null)
+            if (_lastBoard == null)
             {
-                for (int i = piecesRoot.childCount - 1; i >= 0; i--)
+                BuildAll(board);                // בונה את כולם תחת ה-slots וממלא _pieces
+                _lastBoard = board.Clone();
+                return;
+            }
+        
+            for (int r = 0; r < BoardState.Size; r++)
+            for (int c = 0; c < BoardState.Size; c++)
+            {
+                var coord = new Coord(r, c);
+                var oldP  = _lastBoard[r, c];
+                var newP  = board[r, c];
+        
+                if (SamePiece(oldP, newP)) continue;
+        
+                if (oldP != null && newP == null)
                 {
-                    var child = piecesRoot.GetChild(i);
+                    // הסרה
+                    if (_pieces.TryGetValue(coord, out var go)) {
+                        Destroy(go);
+                        _pieces.Remove(coord);
+                    }
+                    continue;
+                }
+        
+                if (oldP == null && newP != null)
+                {
+                    // יצירה
+                    var prefab = GetPiecePrefab(newP);
+                    if (prefab == null || !_slots.TryGetValue(coord, out var slot)) continue;
+        
+                    var go = Instantiate(prefab, slot);
+                    go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
+                    _pieces[coord] = go;
+                    continue;
+                }
+        
+                // old!=null && new!=null (משהו השתנה: למשל הוכתר)
+                if (oldP.Owner != newP.Owner || oldP.Kind != newP.Kind)
+                {
+                    if (_pieces.TryGetValue(coord, out var oldGo)) Destroy(oldGo);
+                    var prefab = GetPiecePrefab(newP);
+                    if (prefab == null || !_slots.TryGetValue(coord, out var slot)) continue;
+                    var go = Instantiate(prefab, slot);
+                    go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
+                    _pieces[coord] = go;
                 }
             }
-            int placed = 0;
-
-            // 2) עבור על כל התאים וצייר
+        
+            _lastBoard = board.Clone();
+        }
+        
+        // עזרים קטנים:
+        bool SamePiece(Piece a, Piece b)
+        {
+            if (a == null && b == null) return true;
+            if (a == null ||  b == null) return false;
+            return a.Owner == b.Owner && a.Kind == b.Kind;
+        }
+        
+        void BuildAll(BoardState board)
+        {
+            _pieces.Clear();
             for (int r = 0; r < BoardState.Size; r++)
             for (int c = 0; c < BoardState.Size; c++)
             {
                 var p = board[r, c];
                 if (p == null) continue;
-
                 var coord = new Coord(r, c);
-
-                // מיקום המשבצת בעולם
-                if (!_tiles.TryGetValue(coord, out var tileTf)) continue;
-
+                if (!_slots.TryGetValue(coord, out var slot)) continue;
                 var prefab = GetPiecePrefab(p);
                 if (prefab == null) continue;
-
-                var go = Instantiate(prefab, piecesRoot);
-                var pos = tileTf.position;
-                go.transform.position = new Vector3(pos.x, pos.y + pieceYOffset, pos.z);
-
+                var go = Instantiate(prefab, slot);
+                go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
                 _pieces[coord] = go;
-                
-                placed++;
             }
-            Debug.Log($"BoardView.ShowPosition DONE, placed={placed}");
-
         }
-
+        
+        
         private GameObject GetPiecePrefab(Piece p)
         {
             if (p.Owner == PlayerColor.White)

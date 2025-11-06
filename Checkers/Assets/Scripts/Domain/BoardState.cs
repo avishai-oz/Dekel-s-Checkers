@@ -5,9 +5,7 @@ namespace Checkers.Domain
     public sealed class BoardState
     {
         public const int Size = 8;
-
         private readonly Piece[,] _grid = new Piece[Size, Size];
-
         // מגדיר this לגישה נוחה ללוח באמצעות שורות ועמודות או באמצעות אובייקט Coord
         public Piece this[int r, int c] => _grid[r, c];
         public Piece this[Coord c]      => _grid[c.Row, c.Col];

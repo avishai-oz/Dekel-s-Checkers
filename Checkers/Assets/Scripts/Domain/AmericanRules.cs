@@ -52,7 +52,6 @@ namespace Checkers.Domain
               }
               return false;
          }
-        
         public bool ShouldCrown(Piece piece, Coord to)
         {
             if (piece.Kind == PieceKind.Queen) return false;
@@ -84,34 +83,7 @@ namespace Checkers.Domain
                  results.Add(Move.Simple(from, to));
              }
          }
-        
-         // אכילה בודדת (ללא שרשור)
-         /*private void CollectSingleCaptures(BoardState board, Coord from, PlayerColor side, List<Move> results)
-         {
-             var piece = board[from];
-             if (piece == null) return;
-             
-             int[] rowDirs = piece.Kind == PieceKind.Queen ? new[] { -1, +1 } 
-                 : (side == PlayerColor.White ? new[] { -1 } : new[] { -1,+1 });
-             int[] colDirs = new[] { -1, +1 };
-             foreach (var dr in rowDirs)
-             foreach (var dc in colDirs)
-             {
-                 var over = new Coord(from.Row + dr, from.Col + dc);
-                 var to   = new Coord(from.Row + 2 * dr, from.Col + 2 * dc);
-                    
-                 if (!board.InBounds(over) || !board.InBounds(to)) continue;
-                 if (!to.IsDarkSquare) continue;              
-                    
-                 var jumpedPiece = board[over];
-                 if (jumpedPiece == null || jumpedPiece.Owner == side) continue; 
-                 if (board[to] != null) continue;
-                 
-                 results.Add(Move.Capture(from, to, over));
-             }
-         }*/
          
-
          // אכילות (כולל שרשור)
          private void CollectCaptures(BoardState board, Coord from, PlayerColor side, List<Move> results)
          {

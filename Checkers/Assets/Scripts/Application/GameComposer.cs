@@ -4,7 +4,7 @@ using Checkers.Application;
 using Checkers.Presenter;
 using Checkers.View;
 
-public class GameComposerMB : MonoBehaviour
+public class GameComposer : MonoBehaviour
 {
     [SerializeField] private BoardView boardView;   // גרור את ה-BoardView MB
     [SerializeField] private InGameHUD hudView;     
@@ -28,6 +28,6 @@ public class GameComposerMB : MonoBehaviour
         Debug.Log("Composer: returned from OnStartRequested");
 
         // 4) ציור פתיחה
-        _presenter.OnStartMatch();
+        //_presenter.OnStartMatch();
     }
 }

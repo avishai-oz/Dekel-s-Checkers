@@ -2,6 +2,7 @@
 using System;
 using Checkers.Domain;
 using Checkers.Presenter;
+using UnityEngine;
 
 namespace Checkers.Application
 {
@@ -13,10 +14,9 @@ namespace Checkers.Application
         private readonly IRules _rules;
         
         public event Action<BoardState, PlayerColor> PositionChanged;
-        //public event Action<PlayerColor, Move> MoveCommitted;
+        public event Action<PlayerColor, Move> MoveCommitted;
         public event Action<PlayerColor?> GameOver;
         
-        //for presentor
         public IReadOnlyList<Move> LegalMoves() => _rules.LegalMoves(_board, _turn);
         public BoardState Snapshot() => _board.Clone();
         public PlayerColor SideToMove => _turn;
@@ -83,7 +83,6 @@ namespace Checkers.Application
             if (_rules.ShouldCrown(piece, m.To))
                 piece.Crown();
         }
-        
         private void CommitAndNotify(Move m)
         {
             _history.Push(m);
