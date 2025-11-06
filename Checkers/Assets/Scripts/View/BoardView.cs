@@ -26,8 +26,8 @@ namespace Checkers.View
         [SerializeField] private GameObject blackQueenPrefab;
         [SerializeField] private float pieceYOffset = 0.3f; 
        
-        private readonly Dictionary<Coord, GameObject> _pieces = new();
-        private readonly Dictionary<Coord, Transform> _slots = new();
+        private readonly Dictionary<Coord, GameObject> _pieces = new(); 
+        private readonly Dictionary<Coord, Transform> _slots = new(); 
         private BoardState _lastBoard;
         public event Action<Coord> TileClicked;
         
@@ -119,7 +119,7 @@ namespace Checkers.View
         {
             if (_lastBoard == null)
             {
-                BuildAll(board);                // בונה את כולם תחת ה-slots וממלא _pieces
+                BuildAll(board);              
                 _lastBoard = board.Clone();
                 return;
             }
