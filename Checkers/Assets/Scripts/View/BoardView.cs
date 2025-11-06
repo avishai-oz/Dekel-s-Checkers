@@ -45,7 +45,7 @@ namespace Checkers.View
             {
                 if (!TryGetCoordFromName(child.name, out int r, out int c))
                     continue;
-
+                
                 var coord = new Coord(r, c);
                 _tiles[coord] = child;
                 
