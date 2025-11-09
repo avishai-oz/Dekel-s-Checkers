@@ -20,7 +20,6 @@ namespace Checkers.View
         private readonly HashSet<Coord> _highlighted = new();
         
         [Header("pices")]
-        //[SerializeField] private Transform piecesRoot;
         [SerializeField] private GameObject whiteSinglePrefab;
         [SerializeField] private GameObject blackSinglePrefab;
         [SerializeField] private GameObject whiteQueenPrefab;
@@ -149,37 +148,33 @@ namespace Checkers.View
         
                 if (oldP == null && newP != null)
                 {
-                    // הוספה: אם כבר יש כלי במפה ביעד (הוזז באנימציה) – אל תשכפל.
-                    if (_pieces.TryGetValue(coord, out var existingAtTo))
+                    // אם כבר יש GO ב-to (הגיע בעקבות אנימציה) — בדוק האם הויזואל תואם
+                    if (_pieces.TryGetValue(coord, out var existingAtTo) && existingAtTo != null)
                     {
-                        // אם יש הכתרה/שינוי סוג – נחליף Prefab; אחרת פשוט נשאיר.
-                        var needReplace = false;
-                        // אין לנו metadata על ה-GO, אז הפתרון הפשוט והבטוח:
-                        // תמיד להחליף כדי לתמוך בהכתרה (ייתכן פליקר קצרצר, לרוב לא מורגש).
-                        needReplace = true;
+                        var tag = existingAtTo.GetComponent<PieceViewTag>();
+                        bool sameLook = tag != null && tag.Owner == newP.Owner && tag.Kind == newP.Kind;
 
-                        if (needReplace)
+                        if (sameLook)
                         {
-                            Destroy(existingAtTo);
-                            _pieces.Remove(coord);
+                            // אין צורך להחליף prefab; רק ודא עגינה וגובה
+                            AttachToSlot(existingAtTo, coord);
+                            continue;
                         }
                         else
                         {
-                            // אם החלטת לא להחליף – רק ודא עיגון למקום הנכון:
-                            if (_slots.TryGetValue(coord, out var s))
-                            {
-                                existingAtTo.transform.SetParent(s, true);
-                                existingAtTo.transform.localPosition = new Vector3(0, pieceYOffset, 0);
-                            }
-                            continue; // אין יצירה חדשה
+                            // הכתרה/שינוי סוג → החלפה נקייה
+                            Destroy(existingAtTo);
+                            _pieces.Remove(coord);
                         }
                     }
 
-                    // יצירה רגילה (כרגיל)
+                    // יצירה רגילה
                     var prefab = GetPiecePrefab(newP);
                     if (prefab == null || !_slots.TryGetValue(coord, out var slot)) continue;
+
                     var go = Instantiate(prefab, slot);
                     go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
+                    SetTag(go, newP);
                     _pieces[coord] = go;
                     continue;
                 }
@@ -191,6 +186,7 @@ namespace Checkers.View
                     var prefab = GetPiecePrefab(newP);
                     if (prefab == null || !_slots.TryGetValue(coord, out var slot)) continue;
                     var go = Instantiate(prefab, slot);
+                    SetTag(go, newP);
                     go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
                     _pieces[coord] = go;
                 }
@@ -217,6 +213,7 @@ namespace Checkers.View
                 var prefab = GetPiecePrefab(p);
                 if (prefab == null) continue;
                 var go = Instantiate(prefab, slot);
+                SetTag(go, p);
                 go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
                 _pieces[coord] = go;
             }
@@ -228,7 +225,20 @@ namespace Checkers.View
             else
                 return p.Kind == PieceKind.Single ? blackSinglePrefab : blackQueenPrefab;
         }
-        
+        private void AttachToSlot(GameObject go, Coord coord)
+        {
+            if (!_slots.TryGetValue(coord, out var slot)) return;
+            go.transform.SetParent(slot, true);
+            go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
+        }
+
+        private void SetTag(GameObject go, Piece p)
+        {
+            var tag = go.GetComponent<PieceViewTag>();
+            if (tag == null) tag = go.AddComponent<PieceViewTag>();
+            tag.Owner = p.Owner;
+            tag.Kind  = p.Kind;
+        }
         public void AnimateMove(Move move, System.Action onComplete)
         {
             

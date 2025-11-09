@@ -77,9 +77,9 @@ namespace Checkers.Presenter
         public void OnStartRequested()
         {
             Debug.Log("Presenter.OnStartRequested → draw initial board");
-            _board.ShowPosition(_match.Snapshot());   // מציירים את המצב ההתחלתי
-            _hud?.ShowTurn(_match.SideToMove);         // מציגים תור נוכחי (אם יש HUD)
-            RebuildLegalCache();                      // בונה cache של מהלכים למצב הנוכחי
+            _board.ShowPosition(_match.Snapshot());  
+            _hud.ShowTurn(_match.SideToMove);        
+            RebuildLegalCache();                   
         }
         public void OnStartMatch()
         {
