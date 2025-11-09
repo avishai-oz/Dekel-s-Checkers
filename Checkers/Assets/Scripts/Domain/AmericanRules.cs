@@ -90,11 +90,9 @@ namespace Checkers.Domain
              var piece = board[from];
              if (piece == null) return;
 
-             // אמריקאית: Single אוכל גם קדימה וגם אחורה; Queen כרגיל דו-כיוונית
              int[] rowDirs = piece.Kind == PieceKind.Queen ? new[] { -1, +1 } : new[] { -1, +1 };
              int[] colDirs = new[] { -1, +1 };
 
-             // DFS: מנסים קפיצה, מסירים את הנאכל, וממשיכים משם. אם אין המשך — סוגרים מהלך מורכב.
              void Dfs(BoardState b, Coord current, List<Coord> capturedSoFar)
              {
                  bool extended = false;
@@ -112,7 +110,6 @@ namespace Checkers.Domain
                      if (middlePiece == null || middlePiece.Owner == side) continue;
                      if (b[to] != null) continue;
 
-                     // מסמלצים: מעבירים כלי, מסירים את היריב, וממשיכים לחפש עוד אכילות
                      var b2 = b.Clone();
                      var moving = b2[current];
                      b2.MovePiece(current, to);

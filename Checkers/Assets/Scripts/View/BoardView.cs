@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using Checkers.Domain;
 using Checkers.Presenter;
+using Checkers.infrastucture;
 
 namespace Checkers.View
 {
@@ -19,13 +20,17 @@ namespace Checkers.View
         private readonly HashSet<Coord> _highlighted = new();
         
         [Header("pices")]
-        [SerializeField] private Transform piecesRoot;
+        //[SerializeField] private Transform piecesRoot;
         [SerializeField] private GameObject whiteSinglePrefab;
         [SerializeField] private GameObject blackSinglePrefab;
         [SerializeField] private GameObject whiteQueenPrefab;
         [SerializeField] private GameObject blackQueenPrefab;
         [SerializeField] private float pieceYOffset = 0.3f; 
        
+        [Header("animation")]
+        [SerializeField] private CoroutineTweenService tweenService; // גרור את ה-Services לכאן
+        [SerializeField] private float moveDuration = 0.25f;
+        
         private readonly Dictionary<Coord, GameObject> _pieces = new(); 
         private readonly Dictionary<Coord, Transform> _slots = new(); 
         private BoardState _lastBoard;
@@ -131,11 +136,10 @@ namespace Checkers.View
                 var oldP  = _lastBoard[r, c];
                 var newP  = board[r, c];
         
-                if (SamePiece(oldP, newP)) continue;
+                if (SamePiece(oldP, newP)) continue; // pice unchanged
         
-                if (oldP != null && newP == null)
+                if (oldP != null && newP == null) // piece removed
                 {
-                    // הסרה
                     if (_pieces.TryGetValue(coord, out var go)) {
                         Destroy(go);
                         _pieces.Remove(coord);
@@ -145,10 +149,35 @@ namespace Checkers.View
         
                 if (oldP == null && newP != null)
                 {
-                    // יצירה
+                    // הוספה: אם כבר יש כלי במפה ביעד (הוזז באנימציה) – אל תשכפל.
+                    if (_pieces.TryGetValue(coord, out var existingAtTo))
+                    {
+                        // אם יש הכתרה/שינוי סוג – נחליף Prefab; אחרת פשוט נשאיר.
+                        var needReplace = false;
+                        // אין לנו metadata על ה-GO, אז הפתרון הפשוט והבטוח:
+                        // תמיד להחליף כדי לתמוך בהכתרה (ייתכן פליקר קצרצר, לרוב לא מורגש).
+                        needReplace = true;
+
+                        if (needReplace)
+                        {
+                            Destroy(existingAtTo);
+                            _pieces.Remove(coord);
+                        }
+                        else
+                        {
+                            // אם החלטת לא להחליף – רק ודא עיגון למקום הנכון:
+                            if (_slots.TryGetValue(coord, out var s))
+                            {
+                                existingAtTo.transform.SetParent(s, true);
+                                existingAtTo.transform.localPosition = new Vector3(0, pieceYOffset, 0);
+                            }
+                            continue; // אין יצירה חדשה
+                        }
+                    }
+
+                    // יצירה רגילה (כרגיל)
                     var prefab = GetPiecePrefab(newP);
                     if (prefab == null || !_slots.TryGetValue(coord, out var slot)) continue;
-        
                     var go = Instantiate(prefab, slot);
                     go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
                     _pieces[coord] = go;
@@ -169,15 +198,12 @@ namespace Checkers.View
         
             _lastBoard = board.Clone();
         }
-        
-        // עזרים קטנים:
         bool SamePiece(Piece a, Piece b)
         {
             if (a == null && b == null) return true;
             if (a == null ||  b == null) return false;
             return a.Owner == b.Owner && a.Kind == b.Kind;
         }
-        
         void BuildAll(BoardState board)
         {
             _pieces.Clear();
@@ -195,8 +221,6 @@ namespace Checkers.View
                 _pieces[coord] = go;
             }
         }
-        
-        
         private GameObject GetPiecePrefab(Piece p)
         {
             if (p.Owner == PlayerColor.White)
@@ -204,6 +228,42 @@ namespace Checkers.View
             else
                 return p.Kind == PieceKind.Single ? blackSinglePrefab : blackQueenPrefab;
         }
+        
+        public void AnimateMove(Move move, System.Action onComplete)
+        {
+            
+            if (!_pieces.TryGetValue(move.From, out var go))
+            {
+                Debug.LogWarning($"AnimateMove: no piece at {move.From}");
+                onComplete?.Invoke();
+                return;
+            }
+            
+            foreach (var cap in move.Captured)
+                if (_pieces.TryGetValue(cap, out var dead))
+                {
+                    Destroy(dead);
+                    _pieces.Remove(cap);
+                }
+            
+            if (!_slots.TryGetValue(move.To, out var toSlot))
+            {
+                Debug.LogWarning($"AnimateMove: no slot at {move.To}");
+                onComplete?.Invoke();
+                return;
+            }
+            var endWorld = toSlot.TransformPoint(new Vector3(0, pieceYOffset, 0));
 
+
+            tweenService?.Move(go.transform, endWorld, moveDuration, () =>
+            {
+                _pieces.Remove(move.From);
+                _pieces[move.To] = go;
+                go.transform.SetParent(toSlot, true);
+                go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
+
+                onComplete?.Invoke();
+            });
+        }
     }
 }

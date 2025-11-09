@@ -87,6 +87,7 @@ namespace Checkers.Application
         {
             _history.Push(m);
             _turn = _turn.Opponent();
+            MoveCommitted?.Invoke(_turn.Opponent(), m);
             OnPositionChanged();
             
             if(_rules.IsGameOver(_board, _turn, out var winner))

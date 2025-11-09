@@ -14,6 +14,9 @@ namespace Checkers.Presenter
         private readonly IBoardView _board;
         private readonly IInGameHUD _hud;
 
+        bool _isAnimating = false;
+        BoardState _pendingBoard;
+        PlayerColor _pendingSide;
         
         enum UiState { Idle, FromSelected }
         UiState _state = UiState.Idle;
@@ -29,11 +32,13 @@ namespace Checkers.Presenter
             _hud   = hud ?? throw new ArgumentNullException(nameof(board));
             
             _match.PositionChanged += HandelPositionChanged; //match event → view update
+            _match.MoveCommitted += HandleMoveCommitted;     // match event → view update
             _match.GameOver += HandelGameOver;               // match event → view update
             _board.TileClicked += OnTileClicked;             // board event → match update
 
         }
 
+       
         public void OnTileClicked(Coord c)
         {
             if (_state == UiState.Idle)
@@ -89,14 +94,38 @@ namespace Checkers.Presenter
         }
         private void HandelPositionChanged(BoardState board, PlayerColor side)
         {
+            if (_isAnimating)
+            {
+                _pendingBoard = board;
+                _pendingSide = side;
+                return;
+            }
+
             _board.ShowPosition(board);
             _hud.ShowTurn(side);
             RebuildLegalCache();
         }
+        private void HandleMoveCommitted(PlayerColor mover, Move m)
+        {
+            _isAnimating = true;
+            _board.ClearHighlights();
+
+            _board.AnimateMove(m, () =>
+            {
+                _isAnimating = false;
+
+                if (_pendingBoard != null)
+                {
+                    _board.ShowPosition(_pendingBoard);
+                    _hud.ShowTurn(_pendingSide);
+                    _pendingBoard = null;
+                    RebuildLegalCache();
+                }
+            });        }
 
         private void HandelGameOver(PlayerColor? winner)
         {
-            //TODO: show game over screen
+            Debug.Log("Presenter: handling GameOver");
         }
         
         void RebuildLegalCache()

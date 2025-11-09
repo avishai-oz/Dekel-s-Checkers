@@ -784,51 +784,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6503aa8d0173c741aabe11f0fb20f6c, type: 3}
---- !u!1 &281891515
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 281891517}
-  - component: {fileID: 281891516}
-  m_Layer: 0
-  m_Name: 'CoroutineTweenService '
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &281891516
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 281891515}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 191e0cbff51840a799f4c986c63c1add, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Checkers.infrastucture.CoroutineTweenService
-  defaultDuration: 0.25
---- !u!4 &281891517
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 281891515}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.12067, y: 0.5, z: -4.6154}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &300213205 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7125592726918781851, guid: a6503aa8d0173c741aabe11f0fb20f6c, type: 3}
@@ -921,13 +876,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6427876, y: 0, z: 0, w: 0.7660445}
-  m_LocalPosition: {x: -3.78, y: 10.54, z: -5.97}
+  m_LocalRotation: {x: 0.5186198, y: -0, z: -0, w: 0.855005}
+  m_LocalPosition: {x: -3.78, y: 9.12, z: -8.69}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 80, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 62.479, y: 0, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2327,6 +2282,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6503aa8d0173c741aabe11f0fb20f6c, type: 3}
+--- !u!4 &794840069 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 976164274169525830, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
+  m_PrefabInstance: {fileID: 1105361241}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &797877614
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3289,15 +3249,11 @@ PrefabInstance:
     - target: {fileID: 7975849236623093136, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
       propertyPath: piecesRoot
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1263460417}
     - target: {fileID: 7975849236623093136, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
       propertyPath: pieceYOffset
       value: 0.3
       objectReference: {fileID: 0}
-    - target: {fileID: 7975849236623093136, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
-      propertyPath: tweenService
-      value: 
-      objectReference: {fileID: 281891516}
     - target: {fileID: 9000989546677862504, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -3434,6 +3390,9 @@ PrefabInstance:
     - {fileID: 5523180651494954344, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
     - {fileID: 4006428379708255361, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 976164274169525830, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1263460417}
     - targetCorrespondingSourceObject: {fileID: 4056023943628084757, guid: a75430c032f9606429cf0f4bd9edafad, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1367570365}
@@ -3831,6 +3790,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6503aa8d0173c741aabe11f0fb20f6c, type: 3}
+--- !u!1 &1263460416
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1263460417}
+  m_Layer: 0
+  m_Name: Pices
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1263460417
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263460416}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.46661, y: 0, z: 3.18823}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 794840069}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1281419222
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5521,7 +5511,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4518466079114493492, guid: a6503aa8d0173c741aabe11f0fb20f6c, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6503aa8d0173c741aabe11f0fb20f6c, type: 3}
@@ -5536,4 +5527,3 @@ SceneRoots:
   - {fileID: 642194539}
   - {fileID: 1105361241}
   - {fileID: 482326001}
-  - {fileID: 281891517}

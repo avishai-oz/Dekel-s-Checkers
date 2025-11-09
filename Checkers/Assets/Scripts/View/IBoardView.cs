@@ -10,6 +10,8 @@ namespace Checkers.View
         public void ClearHighlights();
         void HighlightTargets(IEnumerable<Coord> coords);
         
+        void AnimateMove(Move move, System.Action onComplete);
+
         event Action<Coord> TileClicked;
     }
 }
