@@ -120,7 +120,6 @@ namespace Checkers.Domain
                      Dfs(b2, to, capturedNext);
                  }
 
-                 // אם לא הצלחנו להאריך (אין עוד אכילות) אבל כבר יש לפחות אכילה אחת → סוגרים מהלך
                  if (!extended && capturedSoFar.Count > 0)
                  {
                      results.Add(new Move(from, current, capturedSoFar.ToArray()));

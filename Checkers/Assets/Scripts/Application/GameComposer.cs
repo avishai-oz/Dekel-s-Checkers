@@ -6,7 +6,7 @@ using Checkers.View;
 
 public class GameComposer : MonoBehaviour
 {
-    [SerializeField] private BoardView boardView;   // גרור את ה-BoardView MB
+    [SerializeField] private BoardView boardView;
     [SerializeField] private InGameHUD hudView;     
 
     private MatchService match;
@@ -15,7 +15,7 @@ public class GameComposer : MonoBehaviour
     void Awake()
     {
         // 1) Domain
-        var initial = BoardState.CreateInitial(); // או פונקציית אתחול שלך
+        var initial = BoardState.CreateInitial(); 
         var rules   = new AmericanRules();
 
         // 2) Application
@@ -26,8 +26,6 @@ public class GameComposer : MonoBehaviour
         Debug.Log("Composer: calling OnStartRequested");
         _presenter.OnStartRequested();
         Debug.Log("Composer: returned from OnStartRequested");
-
-        // 4) ציור פתיחה
-        //_presenter.OnStartMatch();
+        
     }
 }
