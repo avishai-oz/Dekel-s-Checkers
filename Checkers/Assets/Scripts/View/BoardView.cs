@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -148,7 +149,6 @@ namespace Checkers.View
         
                 if (oldP == null && newP != null)
                 {
-                    // אם כבר יש GO ב-to (הגיע בעקבות אנימציה) — בדוק האם הויזואל תואם
                     if (_pieces.TryGetValue(coord, out var existingAtTo) && existingAtTo != null)
                     {
                         var tag = existingAtTo.GetComponent<PieceViewTag>();
@@ -156,19 +156,16 @@ namespace Checkers.View
 
                         if (sameLook)
                         {
-                            // אין צורך להחליף prefab; רק ודא עגינה וגובה
                             AttachToSlot(existingAtTo, coord);
                             continue;
                         }
                         else
                         {
-                            // הכתרה/שינוי סוג → החלפה נקייה
                             Destroy(existingAtTo);
                             _pieces.Remove(coord);
                         }
                     }
 
-                    // יצירה רגילה
                     var prefab = GetPiecePrefab(newP);
                     if (prefab == null || !_slots.TryGetValue(coord, out var slot)) continue;
 
@@ -179,7 +176,6 @@ namespace Checkers.View
                     continue;
                 }
         
-                // old!=null && new!=null (משהו השתנה: למשל הוכתר)
                 if (oldP.Owner != newP.Owner || oldP.Kind != newP.Kind)
                 {
                     if (_pieces.TryGetValue(coord, out var oldGo)) Destroy(oldGo);
@@ -239,41 +235,68 @@ namespace Checkers.View
             tag.Owner = p.Owner;
             tag.Kind  = p.Kind;
         }
+        private List<Coord> ComputeLandings(Coord from, IReadOnlyList<Coord> captured)
+        {
+            var landings = new List<Coord>(Mathf.Max(1, captured.Count));
+            var cur = from;
+            foreach (var mid in captured)
+            {
+                int dr = mid.Row - cur.Row;
+                int dc = mid.Col - cur.Col;
+                var landing = new Coord(cur.Row + 2*dr, cur.Col + 2*dc);
+                landings.Add(landing);
+                cur = landing;
+            }
+            return landings; 
+        }
+        
         public void AnimateMove(Move move, System.Action onComplete)
         {
-            
             if (!_pieces.TryGetValue(move.From, out var go))
             {
                 Debug.LogWarning($"AnimateMove: no piece at {move.From}");
                 onComplete?.Invoke();
                 return;
             }
-            
-            foreach (var cap in move.Captured)
-                if (_pieces.TryGetValue(cap, out var dead))
+
+            var landings = ComputeLandings(move.From, move.Captured);
+            if (landings.Count == 0) landings.Add(move.To); 
+
+            var worldPoints = new List<Vector3>(landings.Count);
+            foreach (var coord in landings)
+            {
+                if (!_slots.TryGetValue(coord, out var slot))
                 {
-                    Destroy(dead);
-                    _pieces.Remove(cap);
+                    Debug.LogWarning($"AnimateMove: missing slot at {coord}");
+                    continue;
                 }
-            
-            if (!_slots.TryGetValue(move.To, out var toSlot))
-            {
-                Debug.LogWarning($"AnimateMove: no slot at {move.To}");
-                onComplete?.Invoke();
-                return;
+                worldPoints.Add(slot.TransformPoint(new Vector3(0, pieceYOffset, 0)));
             }
-            var endWorld = toSlot.TransformPoint(new Vector3(0, pieceYOffset, 0));
 
+            tweenService.MoveSequenceBySpeed(go.transform, worldPoints, moveDuration, onHop: i =>
+                {
+                    if (i < move.Captured.Count && _pieces.TryGetValue(move.Captured[i], out var dead))
+                    {
+                        Destroy(dead);
+                        _pieces.Remove(move.Captured[i]);
+                    }
+                },
+                onComplete: () =>
+                {
+                    _pieces.Remove(move.From);
+                    _pieces[move.To] = go;
 
-            tweenService?.Move(go.transform, endWorld, moveDuration, () =>
-            {
-                _pieces.Remove(move.From);
-                _pieces[move.To] = go;
-                go.transform.SetParent(toSlot, true);
-                go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
+                    if (_slots.TryGetValue(move.To, out var toSlot))
+                    {
+                        go.transform.SetParent(toSlot, true);
+                        go.transform.localPosition = new Vector3(0, pieceYOffset, 0);
+                    }
 
-                onComplete?.Invoke();
-            });
+                    onComplete?.Invoke();
+                });
         }
+
+        
+
     }
 }

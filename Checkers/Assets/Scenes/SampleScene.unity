@@ -813,7 +813,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191e0cbff51840a799f4c986c63c1add, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Checkers.infrastucture.CoroutineTweenService
-  defaultDuration: 0.25
+  defaultDuration: 0.5
 --- !u!4 &281891517
 Transform:
   m_ObjectHideFlags: 0
