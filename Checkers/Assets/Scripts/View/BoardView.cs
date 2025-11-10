@@ -28,7 +28,7 @@ namespace Checkers.View
         [SerializeField] private float pieceYOffset = 0.3f; 
        
         [Header("animation")]
-        [SerializeField] private CoroutineTweenService tweenService; // גרור את ה-Services לכאן
+        [SerializeField] private CoroutineTweenService tweenService;
         [SerializeField] private float moveDuration = 0.25f;
         
         private readonly Dictionary<Coord, GameObject> _pieces = new(); 

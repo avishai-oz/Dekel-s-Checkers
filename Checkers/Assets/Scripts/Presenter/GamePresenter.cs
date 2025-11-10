@@ -88,10 +88,6 @@ namespace Checkers.Presenter
             _board.ShowPosition(_match.Snapshot());
             _hud.ShowTurn(_match.SideToMove);
         }
-        public void OnMoveTweenComplete()
-        {
-            throw new System.NotImplementedException();
-        }
         private void HandelPositionChanged(BoardState board, PlayerColor side)
         {
             if (_isAnimating)
